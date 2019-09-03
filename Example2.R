@@ -16,12 +16,23 @@ classify_for <- function(beta, xtrain, ytrain, xtest, ytest){
   # [ToDo] Code discriminant analysis classifier using for loop
   
   # Calculate sample means based on training data
- 
+  x_train_bar1 <- colMeans(xtrain[ytrain == 1, ]) ## sample mean for class1
+  x_train_bar2 <- colMeans(xtrain[ytrain == 2, ]) ## sample mean for class2
   
   # Calculate class assignments for xtest in a for loop
+  ntest <- nrow(xtest)
+  ypred <- rep(1, ntest)
+  for(i in 1:ntest) {
+    h1 = as.numeric(crossprod(beta, xtest[i, ] - xbar1)^2)
+    h2 = as.numeric(crossprod(beta, xtest[i, ] - xbar2)^2)
+  }
+  if (h1 > h2) {
+    ypred[i] <- 2
+  }
   
   # Calculate % error using ytest
-
+  error <- (sum(ytest != ypred)/ntest) * 100
+  
   # Return predictions and error
   return(list(ypred = ypred, error = error))
 }
@@ -80,6 +91,7 @@ out1 = classify_for(beta, xtrain, ytrain, xtest, ytest)
 out2 = classify_vec(beta, xtrain, ytrain, xtest, ytest)
 
 # [ToDo] Verify the assignments agree with each other
+sum((out1$pred - out2$pred))^2
 
 # [ToDo] Use microbenchmark package to compare the timing
 
