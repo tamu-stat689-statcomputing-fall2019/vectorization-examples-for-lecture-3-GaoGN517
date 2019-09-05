@@ -52,6 +52,7 @@ classify_vec <- function(beta, xtrain, ytrain, xtest, ytest){
 
 # Example 
 ##############################################
+## dynamic memory allocation took a much long time. So define the space rather than cbind or append.
 
 # Create model parameters
 p <- 10 # dimension
