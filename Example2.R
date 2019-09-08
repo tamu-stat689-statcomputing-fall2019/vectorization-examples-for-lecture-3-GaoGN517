@@ -41,11 +41,19 @@ classify_vec <- function(beta, xtrain, ytrain, xtest, ytest){
   # [ToDo] Try to create vectorized version of classify_for
   
   # Calculate sample means based on training data
-  
+  x_train_bar1 <- colMeans(xtrain[ytrain == 1, ]) ## sample mean for class1
+  x_train_bar2 <- colMeans(xtrain[ytrain == 2, ]) ## sample mean for class2
   # Calculate class assignments for xtest using matrix and vector algebra
-  
+  ntest <- nrow(xtest)
+  xtestb <- xtest %*% beta
+  m1b <- as.numeric(crossprod(x_train_bar1, beta)) 
+  ## without as.numeric, the next step will report non-conformable.
+  m2b <- as.numeric(crossprod(x_train_bar2, beta))
+  h1 <- xtestb^2 - 2 * xtestb * m1b + m1b^2
+  h2 <- xtestb^2 - 2 * xtestb * m2b + m2b^2
+  ypred <- ifelse(h1 <= h2, 1, 2)
   # Calculate % error using ytest
- 
+  error <- (sum(ytest != ypred)/ntest) * 100
   # Return predictions and error
   return(list(ypred = ypred, error = error))
 }
@@ -53,7 +61,7 @@ classify_vec <- function(beta, xtrain, ytrain, xtest, ytest){
 # Example 
 ##############################################
 ## dynamic memory allocation took a much long time. So define the space rather than cbind or append.
-
+library(LearnBayes) # required to use rmnorm
 # Create model parameters
 p <- 10 # dimension
 mu1 <- rep(0, p) # mean vector for class 1
@@ -97,3 +105,7 @@ sum((out1$pred - out2$pred))^2
 # [ToDo] Use microbenchmark package to compare the timing
 
 library(microbenchmark)
+microbenchmark(
+  classify_for(beta, xtrain, ytrain, xtest, ytest), #668.0300
+  classify_vec(beta, xtrain, ytrain, xtest, ytest) #65.2765
+)
